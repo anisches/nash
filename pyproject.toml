@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gametheorist"
+version = "0.1.0"
+description = "Interactive CLI app teaching probability, statistics & game theory"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "textual>=1.0.0",
+    "rich>=13.0.0",
+    "textual-plotext>=0.2.0",
+    "numpy>=1.24.0",
+]
+
+[project.scripts]
+gmetry = "gametheorist.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
