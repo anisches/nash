@@ -8,9 +8,7 @@ from textual.app import App
 
 from gametheorist.screens.home import HomeScreen
 from gametheorist.screens.about import AboutScreen
-from gametheorist.modules.coin.screen import CoinScreen
-from gametheorist.modules.monty.screen import MontyScreen
-from gametheorist.modules.birthday.screen import BirthdayScreen
+from gametheorist.modules.registry import get_screens
 
 
 CSS_PATH = Path(__file__).parent / "css" / "app.tcss"
@@ -32,9 +30,7 @@ class GameTheoristApp(App):
     SCREENS = {
         "home": HomeScreen,
         "about": AboutScreen,
-        "coin": CoinScreen,
-        "monty": MontyScreen,
-        "birthday": BirthdayScreen,
+        **get_screens(),
     }
 
     def on_mount(self) -> None:

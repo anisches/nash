@@ -8,75 +8,30 @@ from textual.screen import Screen
 from textual.widgets import Static, Header, Footer, Button
 from textual.widget import Widget
 
+from gametheorist.modules.registry import get_all_modules
 
-MODULE_CARDS = [
-    {
-        "id": "coin",
-        "num": "01",
-        "icon": "🪙",
-        "title": "The Coin That Lies",
-        "subtitle": "Probability Foundations",
-        "desc": "Flip a biased coin. How many flips until you're sure it's rigged?",
-        "difficulty": "⚡",
-        "topics": "Law of Large Numbers • Z-Test • Confidence Intervals",
-        "available": True,
-    },
-    {
-        "id": "monty",
-        "num": "02",
-        "icon": "🚪",
-        "title": "The Monty Hall Arena",
-        "subtitle": "Probability + Intuition-Breaking",
-        "desc": "Goats, cars, and the door you didn't pick. Should you switch?",
-        "difficulty": "⚡⚡",
-        "topics": "Conditional Probability • Bayes' Theorem • Simulation",
-        "available": True,
-    },
-    {
-        "id": "birthday",
-        "num": "03",
-        "icon": "🎂",
-        "title": "The Birthday Paradox Lab",
-        "subtitle": "Probability + Simulation Thinking",
-        "desc": "23 people. Two share a birthday. Your gut says impossible.",
-        "difficulty": "⚡⚡",
-        "topics": "Combinatorics • Monte Carlo • Intuition Calibration",
-        "available": True,
-    },
-    {
-        "id": "prisoner",
-        "num": "04",
-        "icon": "⛓️",
-        "title": "Prisoner's Dilemma Tournament",
-        "subtitle": "Game Theory Entry",
-        "desc": "Design a strategy. Compete against the classics. Why does cooperation win?",
-        "difficulty": "⚡⚡⚡",
-        "topics": "Nash Equilibrium • Iterated Games • Evolutionary Strategy",
-        "available": False,
-    },
-    {
-        "id": "polling",
-        "num": "05",
-        "icon": "🗳️",
-        "title": "Election Polling Simulator",
-        "subtitle": "Statistics, Real-World",
-        "desc": "You're a pollster. Sample voters. How wrong can you be?",
-        "difficulty": "⚡⚡⚡",
-        "topics": "Sampling • CLT • Margin of Error • Bias vs Variance",
-        "available": False,
-    },
-    {
-        "id": "poker",
-        "num": "06",
-        "icon": "🃏",
-        "title": "Poker Hand Showdown",
-        "subtitle": "Probability + Game Theory Finale",
-        "desc": "Calculate odds, then bluff. When should you bet with nothing?",
-        "difficulty": "🔥🔥🔥",
-        "topics": "Expected Value • Pot Odds • Nash Equilibrium • Bluffing",
-        "available": False,
-    },
-]
+
+def _build_module_cards() -> list[dict]:
+    """Build card data from the central registry (single source of truth)."""
+    cards = []
+    for m in get_all_modules():
+        cards.append(
+            {
+                "id": m.id,
+                "num": m.num,
+                "icon": m.icon,
+                "title": m.title,
+                "subtitle": m.subtitle,
+                "desc": m.desc,
+                "difficulty": m.difficulty,
+                "topics": m.topics,
+                "available": m.available,
+            }
+        )
+    return cards
+
+
+MODULE_CARDS = _build_module_cards()
 
 
 class ModuleCard(Widget):
@@ -235,9 +190,10 @@ class HomeScreen(Screen):
         with Grid(id="card-grid"):
             for card_data in MODULE_CARDS:
                 yield ModuleCard(card_data, id=f"card-{card_data['id']}")
+        # Footer hint — kept roughly in sync with the registry.
         yield Static(
-            "[#64748b]  🪙 Coin  │  🚪 Monty  │  🎂 Birthday  │  "
-            "⛓️  Prisoner [dim](soon)[/]  │  🗳️  Polling [dim](soon)[/]  │  "
+            "[#64748b]  🪙 Coin  │  🚪 Monty  │  🎂 Birthday  │  💸 Gambler  │  "
+            "⛓️  Prisoner  │  🗳️  Polling [dim](soon)[/]  │  "
             "🃏 Poker [dim](soon)[/]  [/]",
             id="footer-hint",
         )

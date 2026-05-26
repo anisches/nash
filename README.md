@@ -27,11 +27,22 @@ Then run:
 gmetry
 ```
 
-### Using Homebrew (coming soon)
+### Using Homebrew (experimental / development)
+
+The formula currently supports **HEAD installs only** (until we cut a real GitHub release + tag):
 
 ```bash
-brew install anisches/gametheorist/gmetry
+# From inside the repo (recommended during development)
+brew install --HEAD --formula ./Formula/gametheorist.rb
+
+# After you set up a tap (e.g. anisches/homebrew-gametheorist)
+brew tap anisches/gametheorist
+brew install --HEAD gametheorist
 ```
+
+The installed command is `gmetry`.
+
+Stable releases will become available once we publish actual versioned GitHub releases (then the `url` + `sha256` in the formula will be filled in).
 
 ## Development
 
