@@ -208,7 +208,7 @@ class BirthdayScreen(Screen):
             with Vertical(id="right-panel"):
                 yield ProbabilityChart(id="prob-chart")
                 with ScrollableContainer(id="stats-display"):
-                    yield Static(self._get_stats_text(), id="stats-text")
+                    yield Static("Loading...", id="stats-text")
 
         yield LessonPanel(id="lesson-panel")
         yield StatsBar(id="stats-bar")
@@ -225,28 +225,28 @@ class BirthdayScreen(Screen):
         self.query_one("#math-derivation", MathDerivation).set_n(2)
         self._update_stats()
 
-    def _get_stats_text(self) -> str:
-        room = self.query_one("#room-display", RoomDisplay)
-        n = room.person_count
-        collision_status = "[bold #ff00e5]💥 Collision Found![/]" if room.has_collision else "[dim]None yet[/]"
-
-        # Calculate exact probability for current N
+    def _get_stats_text(self, n: int = 0, has_collision: bool = False) -> str:
+        """Build stats text from explicit values (safe to call before mount)."""
         from gametheorist.modules.birthday.engine import exact_probability
+        collision_status = "💥 Collision Found!" if has_collision else "None yet"
         prob = exact_probability(n)
-
         return (
-            f"[bold #ff00e5]=== Room Statistics ===[/]\n"
-            f"People in Room (N): [bold #00e5ff]{n}[/]\n"
-            f"Possible Pairs: [bold]{(n * (n - 1) // 2) if n > 1 else 0}[/]\n"
+            f"=== Room Statistics ===\n"
+            f"People in Room (N): {n}\n"
+            f"Possible Pairs: {(n * (n - 1) // 2) if n > 1 else 0}\n"
             f"Collision: {collision_status}\n\n"
-            f"[bold #ffab00]Theoretical Probability:[/]\n"
-            f"  P(collision) = [bold #76ff03]{prob:.2%}[/]\n"
-            f"  P(no collision) = [bold]{(1 - prob):.2%}[/]"
+            f"Theoretical Probability:\n"
+            f"  P(collision) = {prob:.2%}\n"
+            f"  P(no collision) = {(1 - prob):.2%}"
         )
 
     def _update_stats(self) -> None:
-        self.query_one("#stats-text", Static).update(self._get_stats_text())
-        n = self.query_one("#room-display", RoomDisplay).person_count
+        room = self.query_one("#room-display", RoomDisplay)
+        n = room.person_count
+        has_collision = room.has_collision
+        self.query_one("#stats-text", Static).update(
+            self._get_stats_text(n=n, has_collision=has_collision)
+        )
 
         # Update stats bar
         from gametheorist.modules.birthday.engine import exact_probability
@@ -254,7 +254,7 @@ class BirthdayScreen(Screen):
         self.query_one("#stats-bar", StatsBar).set_stats(
             people=n,
             prob_collision=f"{prob:.2%}",
-            collision="Yes" if self.query_one("#room-display", RoomDisplay).has_collision else "No",
+            collision="Yes" if has_collision else "No",
         )
 
         if self.active_tab == "math":
